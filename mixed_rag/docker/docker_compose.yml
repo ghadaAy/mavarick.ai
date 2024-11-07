@@ -1,0 +1,22 @@
+# Compose a postgres database together with the extension pgvector
+services:
+  pgvector:
+    image: pgvector/pgvector:pg17
+    restart: "unless-stopped"
+    container_name: pg_vector
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    env_file:
+      - ../.env
+    volumes:
+      - ../pgvector-volume:/var/lib/postgresql/data/pgdata
+
+
+  nlm-ingestor:
+    hostname: nlm-ingestor
+    image: inferyxhub/nlm-ingestor:latest
+    ports:
+      - 5001:5001
+    restart: always
