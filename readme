@@ -1,0 +1,3 @@
+Mirostat adjusts the value of k in top-k decoding to keep the perplexity within a specific range. In this way, it avoids two common problems in text generation: the boredom trap, in which the generated text becomes repetitive, and the perplexity trap, in which the generated text loses coherence. In short, Mirostat allows linguistic models to generate high quality text without the need to manually adjust parameters.
+
+relative_score

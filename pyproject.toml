@@ -1,0 +1,133 @@
+[tool.pytest.ini_options]
+env_file = ".env"
+asyncio_mode = "auto"
+addopts = [
+    "-rasl",
+    "--verbosity=2",
+    # Disable `flaky` plugin for pytest. This plugin conflicts with `rerunfailures` because provide the same marker.
+    "-p", "no:flaky",
+    # Disable `nose` builtin plugin for pytest. This feature is deprecated in 7.2 and will be removed in pytest>=8
+    "-p", "no:nose",
+    # Disable support of a legacy `LocalPath` in favor of stdlib `pathlib.Path`.
+    "-p","no:legacypath",
+    "--disable-warnings",
+    "--asyncio-mode=auto",
+]
+pythonpath = [".", "./frontend/",]
+testpaths = [
+    "tests/",
+]
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+mypy_path = ".:../../../libs/python/"
+files = ["./app/**/*py"]
+### --strict
+ignore_missing_imports = false
+disallow_untyped_defs = true
+check_untyped_defs = true
+warn_unused_configs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+no_implicit_reexport = true
+no_implicit_optional = true
+strict_equality = true
+
+### Other strictness flags
+warn_unreachable = true
+disallow_any_unimported = true
+enable_error_code = 'ignore-without-code'
+
+### Output
+show_error_codes = true
+show_error_context = true
+pretty = true
+
+[tool.mypy-apscheduler]
+ignore_missing_imports = true
+
+[tool.mypy-casbin]
+ignore_missing_imports = true
+
+[tool.mypy-lorem]
+ignore_missing_imports = true
+
+[tool.mypy-alembic_utils]
+ignore_missing_imports = true
+
+[tool.mypy-joblib]
+ignore_missing_imports = true
+
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py311"
+fix = true
+
+[tool.ruff.lint]
+exclude = [
+    "tests/*"
+]
+select = ["ALL"]
+ignore = [
+# TODO: turn on eventually
+"D100",	# undocumented-public-module
+"D101",	# undocumented-public-class
+"D102",	# undocumented-public-method
+"D103",	# undocumented-public-function
+"D105",	# undocumented-magic-method
+"D106",	# undocumented-public-nested-class
+# end TODO
+"D407", # enforce numpy style docstring underlining
+"PTH", # rules that recommend pathlib over the os module or buitlins like open
+"BLE001",
+"ANN101", # missing-type-self
+"ANN102", # missing-type-cls
+"B008", # B008: Do not perform function calls in argument defaults. (FastAPI relies heavily on these)
+"D104",	# undocumented-public-package
+"D107",	# undocumented-public-init,
+"D203", # one-blank-line-before-class
+"D212", # multi-line-summary-second-line
+"D205", # 1 blank line required between summary line and description
+"D400",
+"D401",
+"D404",
+"S101",
+"FIX002", # Line contains TODO, consider resolving the issue
+"TD003", # Missing issue link on the line following this TODO
+"PLR0913", # Too many arguments in function definition
+"E501",
+"TRY300",
+# these rules can cause issues with formatting (recommended by ruff)
+"COM812", # missing-trailing-comma
+"ISC001", # single-line-implicit-string-concatenation
+"TCH002",
+"TCH003",
+"TCH001", # move to type checking block: does not take pydantic models into account (forward ref issue)
+"TCH004", # move out of type checking block, too many false positives
+"N802",
+"G004", # no f strings in logging calls
+"TRY400", # use logging.exception instead of error
+]
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+docstring-code-format = true
