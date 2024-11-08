@@ -8,7 +8,6 @@ from langchain_core.pydantic_v1 import BaseModel
 
 from app.core.config import settings
 from app.indexers.milvus_hybrid import hybrid
-from app.rag.models import GradeDocuments, GradeHallucinations
 from app.rag.prompts import (
     contextulizer_prompt,
     generator_prompt,
