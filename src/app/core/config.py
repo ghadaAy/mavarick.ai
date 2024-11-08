@@ -1,40 +1,29 @@
 import logging
-from typing import Annotated, Literal
+from typing import Literal
 
 from pydantic import (
-    StringConstraints,
     computed_field,
 )
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    POSTGRES_SERVER: Annotated[
-        str, StringConstraints(strip_whitespace=True, strict=True, min_length=3)
-    ]
-    POSTGRES_PORT: int = 5432
-
-    POSTGRES_USER: Annotated[
-        str, StringConstraints(strip_whitespace=True, strict=True, min_length=3)
-    ]
-
-    POSTGRES_PASSWORD: Annotated[
-        str, StringConstraints(strip_whitespace=True, strict=True, min_length=15)
-    ]
     SERVER_STATE: Literal["dev", "production"]
     DOCKER: bool
     PRODUCTION: bool = False
     SPLIT_CHUNK_SIZE: int = 500
     SPLIT_OVERLAP_SIZE: int = 100
     LLMSHERPA_TIMEOUT: int = 60
-    LLM_MODEL: str = "gemma2:2b"  # llama3.1:8b-instruct-q5_0"
+    LLM_MODEL: str = "llama3.1:8b-instruct-q5_0"
     RAG_TOP_K: int = 15
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     OLLAMA_EMBEDDINGS_MODEL_NAME: str = "nomic-embed-text"
     VECTOR_DB_TABLE_NAME: str = "mavarick"
     VECTOR_DB_DB_NAME: str = "vectordb"
     EMBEDDINGS_DIMENSION: int = 768
-    LIGHT_RAG_WOKING_DIR: str = "light_rag_dir"
+    MAX_LLM_RETRIES: int = 2
+
+    COLLECTION_NAME: str = "mavarick"
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -64,6 +53,13 @@ class Settings(BaseSettings):
         if self.PRODUCTION:
             return logging.INFO
         return logging.DEBUG
+
+    @computed_field
+    @property
+    def MILVUS_CONNECTION_URL(self) -> str:
+        if self.DOCKER:
+            return "http://milvus-standalone:19530"
+        return "http://localhost:19530"
 
 
 settings = Settings(_env_file="./.env")
