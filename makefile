@@ -3,8 +3,8 @@
 # Define Python and environment variables
 PYTHON := python3.12
 VENV := .venv
-REQUIREMENTS := mixed_rag/requirements.txt
-FOLDER := mixed_rag
+REQUIREMENTS := src/requirements.txt
+FOLDER := src
 
 activate-and-install:
 	$(PYTHON) -m venv $(VENV)
@@ -13,14 +13,11 @@ activate-and-install:
 
 	$(VENV)/bin/pip install -r $(REQUIREMENTS)
 
-run-pgvector:
-	@echo "Launching pgvector"
-	docker compose -f $(FOLDER)/docker/docker_compose.yml up --build -d pgvector
 
 run-splitter:
 	@echo "Running nlm-ingestor"
 	docker compose -f $(FOLDER)/docker/docker_compose.yml up --build -d nlm-ingestor
 
-run-dev:
+run:
 	@echo "Running dev"
 	docker compose -f $(FOLDER)/docker/docker_compose.yml up --build -d

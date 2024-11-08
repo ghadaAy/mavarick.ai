@@ -9,7 +9,7 @@
 .travis.yml
 .taskcluster.yml
 *.venv
-
+*volumes*
 # Docker
 docker-compose.yml
 Dockerfile

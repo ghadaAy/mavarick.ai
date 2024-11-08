@@ -69,26 +69,42 @@ fix = true
 
 [tool.ruff.lint]
 exclude = [
-    "tests/*"
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    "*.ipynb",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "_pypackages_",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
 ]
 select = ["ALL"]
 ignore = [
-# TODO: turn on eventually
-"D100",	# undocumented-public-module
-"D101",	# undocumented-public-class
-"D102",	# undocumented-public-method
-"D103",	# undocumented-public-function
-"D105",	# undocumented-magic-method
-"D106",	# undocumented-public-nested-class
-# end TODO
 "D407", # enforce numpy style docstring underlining
 "PTH", # rules that recommend pathlib over the os module or buitlins like open
 "BLE001",
 "ANN101", # missing-type-self
 "ANN102", # missing-type-cls
 "B008", # B008: Do not perform function calls in argument defaults. (FastAPI relies heavily on these)
-"D104",	# undocumented-public-package
-"D107",	# undocumented-public-init,
 "D203", # one-blank-line-before-class
 "D212", # multi-line-summary-second-line
 "D205", # 1 blank line required between summary line and description
@@ -96,9 +112,7 @@ ignore = [
 "D401",
 "D404",
 "S101",
-"FIX002", # Line contains TODO, consider resolving the issue
 "TD003", # Missing issue link on the line following this TODO
-"PLR0913", # Too many arguments in function definition
 "E501",
 "TRY300",
 # these rules can cause issues with formatting (recommended by ruff)
