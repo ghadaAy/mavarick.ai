@@ -130,13 +130,13 @@ async def split_file(
             event="File Splitting", step="llm sherpa", status="Failed", exception=e
         )
         text = read_pdf(file_stream=file_bytes)
-        list_split_chunks = await text.and_then_async(
-            lambda text: split_by_token_size(
-                text=text, file_name=file_name, metadata=metadata
-            )
+        if text.is_err():
+            return text
+        list_split_chunks = await split_by_token_size(
+            text=text, file_name=file_name, metadata=metadata
         )
 
-    return list_split_chunks
+    return Ok(list_split_chunks)
 
 
 async def split_mavarick_file() -> list[str] | None:
