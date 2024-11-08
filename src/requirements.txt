@@ -1,9 +1,9 @@
 aiofiles
 fastapi
-langchain-text-splitters==0.3.0
-pymilvus[model]
 langchain-milvus
+langchain-ollama
 langchain-openai
+langchain-text-splitters==0.3.0
 llmsherpa
 loguru==0.7.2
 msgspec
@@ -14,11 +14,11 @@ psycopg2-binary==2.9.9
 psycopg[binary,pool]==3.2.3
 pydantic==2.9.2
 pydantic_settings==2.6.0
+pymilvus[model]
 PyMuPDF
 python-docx==1.1.2
 python-magic==0.4.27
 result==0.17.0
 structlog
-uvicorn
-langchain-ollama
 tenacity
+uvicorn

@@ -6,19 +6,18 @@ import aiofiles
 import magic
 import msgspec
 import tiktoken
-from app.core.config import settings
-from app.core.custom_error import CustomError
-from app.core.custom_logger import logger
-from app.file_utils.file_loaders import (
-    AllowedMimeFileTypes,
-    read_file_bytes_as_text,
-)
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from llmsherpa.readers import LayoutPDFReader
 from result import Ok, Result
 
+from app.core.config import settings
+from app.core.custom_error import CustomError
+from app.core.custom_logger import logger
+from app.file_utils.file_loaders import (
+    read_pdf,
+)
+
 text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-    model_name="gpt-4",
     chunk_size=settings.SPLIT_CHUNK_SIZE,
     chunk_overlap=settings.SPLIT_OVERLAP_SIZE,
 )
@@ -31,7 +30,7 @@ Metadata = dict[str, Any] | None
 class Chunk(msgspec.Struct):
     file_title: str
     content: str
-    metadata: Metadata | None = None
+    metadata: Metadata = {}
 
 
 async def llmsherpa_split_file(
@@ -130,10 +129,7 @@ async def split_file(
         await logger.aexception(
             event="File Splitting", step="llm sherpa", status="Failed", exception=e
         )
-        file_type = AllowedMimeFileTypes.by_value(mime.from_buffer(file_bytes))
-        if file_type is None:
-            return CustomError(message="Unsupported file type")
-        text = read_file_bytes_as_text(file_bytes=file_bytes, file_type=file_type)
+        text = read_pdf(file_bytes=file_bytes)
         list_split_chunks = await text.and_then_async(
             lambda text: split_by_token_size(
                 text=text, file_name=file_name, metadata=metadata
@@ -143,7 +139,7 @@ async def split_file(
     return list_split_chunks
 
 
-async def split_mavarick_file() -> Result[list[Chunk], CustomError]:
+async def split_mavarick_file() -> list[str] | None:
     file_name = "Scope3_Calculation_Guidance_0.pdf"
     async with aiofiles.open(os.path.join("app", "files", file_name), mode="rb") as f:
         contents = await f.read()
@@ -151,4 +147,10 @@ async def split_mavarick_file() -> Result[list[Chunk], CustomError]:
     chunks = await split_file(file_bytes=contents, file_name=file_name, metadata=None)
     if chunks.is_err():
         await logger.aerror(step="by token size", status="Started")
-    return chunks
+        return None
+    docs = chunks_to_texts(chunks.unwrap())
+    return docs
+
+
+def chunks_to_texts(chunks: list[Chunk]) -> list[str]:
+    return [chunk.content for chunk in chunks]
