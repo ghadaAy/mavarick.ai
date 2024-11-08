@@ -129,7 +129,7 @@ async def split_file(
         await logger.aexception(
             event="File Splitting", step="llm sherpa", status="Failed", exception=e
         )
-        text = read_pdf(file_bytes=file_bytes)
+        text = read_pdf(file_stream=file_bytes)
         list_split_chunks = await text.and_then_async(
             lambda text: split_by_token_size(
                 text=text, file_name=file_name, metadata=metadata
