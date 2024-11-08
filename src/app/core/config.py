@@ -62,4 +62,4 @@ class Settings(BaseSettings):
         return "http://localhost:19530"
 
 
-settings = Settings(_env_file="./src/.env")
+settings = Settings(_env_file="./.env")
