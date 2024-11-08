@@ -1,10 +1,9 @@
 aiofiles
 fastapi
 langchain-text-splitters==0.3.0
-llama-index>=0.11.10
-llama-index-embeddings-ollama
-llama-index-llms-ollama
-llama-index-vector-stores-postgres>=0.2.1
+pymilvus[model]
+langchain-milvus
+langchain-openai
 llmsherpa
 loguru==0.7.2
 msgspec
@@ -21,3 +20,5 @@ python-magic==0.4.27
 result==0.17.0
 structlog
 uvicorn
+langchain-ollama
+tenacity
