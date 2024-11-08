@@ -1,3 +1,4 @@
+"""Text splitter module that contains different methods to split a file's content."""
 import asyncio
 import os
 from typing import Any
@@ -28,6 +29,8 @@ Metadata = dict[str, Any] | None
 
 
 class Chunk(msgspec.Struct):
+    """Represents a data chunk with title, content, and optional metadata."""
+
     file_title: str
     content: str
     metadata: Metadata = {}
@@ -97,6 +100,16 @@ async def split_by_token_size(
 
 
 def calculate_tokens(chunk: str) -> Result[int, CustomError]:
+    """
+    Calculates the token count of a chunk using encoding.
+
+    Args:
+        chunk (str): Text chunk to calculate token count for.
+
+    Returns:
+        Result[int, CustomError]: Token count or an error.
+
+    """
     try:
         encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
         return Ok(len(encoding.encode(chunk)))
@@ -107,6 +120,18 @@ def calculate_tokens(chunk: str) -> Result[int, CustomError]:
 async def split_file(
     file_bytes: bytes, file_name: str, metadata: Metadata = None
 ) -> Result[list[Chunk], CustomError]:
+    """
+    Splits a file into chunks based on LLM Sherpa response and token size.
+
+    Args:
+        file_bytes (bytes): File content.
+        file_name (str): Name of the file.
+        metadata (Metadata, optional): Metadata for the vector store. Defaults to None.
+
+    Returns:
+        Result[list[Chunk], CustomError]: List of chunks or an error.
+
+    """
     list_chunks: list[Chunk] = []
     try:
         async with asyncio.timeout(settings.LLMSHERPA_TIMEOUT):
@@ -140,6 +165,13 @@ async def split_file(
 
 
 async def split_mavarick_file() -> list[str] | None:
+    """
+    Splits a specific PDF file using the `split_file` function.
+
+    Returns
+        list[str] | None: List of text chunks or None if splitting failed.
+
+    """
     file_name = "Scope3_Calculation_Guidance_0.pdf"
     async with aiofiles.open(os.path.join("app", "files", file_name), mode="rb") as f:
         contents = await f.read()
@@ -148,9 +180,18 @@ async def split_mavarick_file() -> list[str] | None:
     if chunks.is_err():
         await logger.aerror(step="by token size", status="Started")
         return None
-    docs = chunks_to_texts(chunks.unwrap())
-    return docs
+    return chunks_to_texts(chunks.unwrap())
 
 
 def chunks_to_texts(chunks: list[Chunk]) -> list[str]:
+    """
+    Converts a list of chunks to a list of text strings.
+
+    Args:
+        chunks (list[Chunk]): List of chunks.
+
+    Returns:
+        list[str]: List of chunk contents as strings.
+
+    """
     return [chunk.content for chunk in chunks]

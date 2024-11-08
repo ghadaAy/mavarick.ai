@@ -1,3 +1,4 @@
+"""Custom logger that uses stuctlog."""
 import logging
 
 import structlog

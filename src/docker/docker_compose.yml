@@ -36,7 +36,7 @@ services:
 
   standalone:
     container_name: milvus-standalone
-    image: milvusdb/milvus:master-20241107-f348bd94-amd64
+    image: milvusdb/milvus #milvusdb/milvus:master-20241107-f348bd94-amd64
     command: ["milvus", "run", "standalone"]
     restart: "always"
     environment:

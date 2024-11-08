@@ -1,3 +1,4 @@
+"""File loaders module that will contain different types of files loaders in the future. Currently, only contains pdf reader."""
 import io
 from concurrent.futures import Future, ThreadPoolExecutor
 
@@ -12,6 +13,16 @@ type StreamFile = io.BytesIO
 
 
 def read_pdf(file_stream: StreamFile) -> Result[ClientDocument, CustomError]:
+    """
+    Reads and extracts text from a PDF file.
+
+    Args:
+        file_stream (StreamFile): Input PDF file stream.
+
+    Returns:
+        Result[ClientDocument, CustomError]: Extracted document text or an error.
+
+    """
     try:
         with fitz.open(stream=file_stream) as document:
 

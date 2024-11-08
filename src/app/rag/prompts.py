@@ -1,6 +1,7 @@
+"""All prompts used in the rag flow."""
 from langchain_core.prompts import ChatPromptTemplate
 
-GRADER_SYSTEM_PROMPT="""You are a grader assessing relevance of a retrieved document to a user question. \n 
+GRADER_SYSTEM_PROMPT = """You are a grader assessing relevance of a retrieved document to a user question. \n
     If the document contains keyword(s) or semantic meaning related to the user question, grade it as relevant. \n
     It does not need to be a stringent test. The goal is to filter out erroneous retrievals. \n
     Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question.
@@ -15,11 +16,14 @@ GRADER_SYSTEM_PROMPT="""You are a grader assessing relevance of a retrieved docu
 grader_prompt = ChatPromptTemplate.from_messages(
     messages=[
         ("system", GRADER_SYSTEM_PROMPT),
-        ("human", "Retrieved documents: \n\n {document} \n\n User question: {question}"),
+        (
+            "human",
+            "Retrieved documents: \n\n {document} \n\n User question: {question}",
+        ),
     ]
 )
 
-GENERATOR_SYSTEM_PROMPT="""You are a RAG agent, your job is to look for any information inside of the context that can be used in answering the question.
+GENERATOR_SYSTEM_PROMPT = """You are a RAG agent, your job is to look for any information inside of the context that can be used in answering the question.
 Be thorough, focus, read well, take your time we're not in a hurry
 You do not have the right to miss any part of the answer so focus
 there is no need for the parts of the answer to be formatted the same way to be included in the answer,
@@ -40,11 +44,14 @@ If you cannot answer return "I apologize but I could not find an answer to your 
 generator_prompt = ChatPromptTemplate.from_messages(
     messages=[
         ("system", GENERATOR_SYSTEM_PROMPT),
-        ("human", "Retrieved documents: \n\n <docs>{documents}</docs> \n\n User question: <question>{question}</question>, \n\n conversation history <history>{history}</history>"),
+        (
+            "human",
+            "Retrieved documents: \n\n <docs>{documents}</docs> \n\n User question: <question>{question}</question>, \n\n conversation history <history>{history}</history>",
+        ),
     ]
 )
 
-HALLUCINATION_SYSTEM_PROMPT = """You are a grader assessing whether an LLM generation is grounded in / supported by a set of retrieved facts. \n 
+HALLUCINATION_SYSTEM_PROMPT = """You are a grader assessing whether an LLM generation is grounded in / supported by a set of retrieved facts. \n
     Give a binary score 'yes' or 'no'. 'Yes' means that the answer is grounded in / supported by the set of facts.
     if you have any doubts, return 'yes'
     you must return only yes or no.
@@ -53,11 +60,14 @@ HALLUCINATION_SYSTEM_PROMPT = """You are a grader assessing whether an LLM gener
 hallucination_prompt = ChatPromptTemplate.from_messages(
     messages=[
         ("system", HALLUCINATION_SYSTEM_PROMPT),
-        ("human", "Set of facts: \n\n <facts>{documents}</facts> \n\n LLM generation: <generation>{generation}</generation>"),
+        (
+            "human",
+            "Set of facts: \n\n <facts>{documents}</facts> \n\n LLM generation: <generation>{generation}</generation>",
+        ),
     ]
 )
 
-REGENERATOR_SYSTEM_PROMPT="""You are a RAG agent, your job is to look for any information inside of the context that can be used in answering the question.
+REGENERATOR_SYSTEM_PROMPT = """You are a RAG agent, your job is to look for any information inside of the context that can be used in answering the question.
 Be thorough, focus, read well, take your time we're not in a hurry
 You do not have the right to miss any part of the answer so focus
 there is no need for the parts of the answer to be formatted the same way to be included in the answer,
@@ -74,10 +84,13 @@ use the conversation history to  understand the user question better
 If you cannot answer return "I apologize but I could not find an answer to your question."
 you have hallucinated your answer beforehand! make sure to only use the retrieved documents.
 """
-regenerator_prompt= ChatPromptTemplate.from_messages(
+regenerator_prompt = ChatPromptTemplate.from_messages(
     messages=[
         ("system", REGENERATOR_SYSTEM_PROMPT),
-        ("human", "Retrieved documents: \n\n <docs>{documents}</docs> \n\n User question: <question>{question}</question> \n\n conversation history <history>{history}</history>"),
+        (
+            "human",
+            "Retrieved documents: \n\n <docs>{documents}</docs> \n\n User question: <question>{question}</question> \n\n conversation history <history>{history}</history>",
+        ),
     ]
 )
 
@@ -109,9 +122,12 @@ User Statement: 'The weather is bad today.'
 AI Response: 'The weather is bad today.'
 
 """
-contextulizer_prompt= ChatPromptTemplate.from_messages(
+contextulizer_prompt = ChatPromptTemplate.from_messages(
     messages=[
         ("system", CONTEXTUALIZER_SYSTEM_PROMPT),
-        ("human", "user query: \n\n <query>{question}</query> \n\n history: <history>{history}</history>"),
+        (
+            "human",
+            "user query: \n\n <query>{question}</query> \n\n history: <history>{history}</history>",
+        ),
     ]
 )

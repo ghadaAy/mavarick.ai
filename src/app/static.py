@@ -1,3 +1,4 @@
+"""The models that will be used throughout the project."""
 from langchain_ollama import OllamaEmbeddings
 from langchain_ollama.llms import OllamaLLM
 
