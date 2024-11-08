@@ -133,7 +133,7 @@ async def split_file(
         if text.is_err():
             return text
         list_split_chunks = await split_by_token_size(
-            text=text, file_name=file_name, metadata=metadata
+            text=text.unwrap(), file_name=file_name, metadata=metadata
         )
 
     return Ok(list_split_chunks)
