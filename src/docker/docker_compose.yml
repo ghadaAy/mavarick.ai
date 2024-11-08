@@ -1,6 +1,6 @@
 # Compose a postgres database together with the extension pgvector
 services:
-  
+
   nlm-ingestor:
     hostname: nlm-ingestor
     image: inferyxhub/nlm-ingestor:latest
