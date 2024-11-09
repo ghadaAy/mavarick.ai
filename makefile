@@ -10,7 +10,6 @@ activate-and-install:
 	$(PYTHON) -m venv $(VENV)
 
 	@echo "installing requirements"
-
 	$(VENV)/bin/pip install -r $(REQUIREMENTS)
 
 
