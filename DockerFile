@@ -1,0 +1,42 @@
+FROM python:3.12-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+
+# Set up work directory
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Runtime Stage
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# Set up a non-root user
+RUN addgroup --system appgroup && \
+    adduser --system --ingroup appgroup appuser
+
+# Copy dependencies and application files
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+WORKDIR /app
+
+# Copy files and set ownership to appuser
+COPY --chown=appuser:appgroup . .
+
+# fix permission issue with langchain bm25 using /nonexistant/ as a cache folder
+ENV TRANSFORMERS_CACHE=/app/src/app
+ENV NLTK_DATA=/app/src/app
+
+# Run as non-root user
+USER appuser
+
+EXPOSE 8000
+
+CMD ["python","src/main.py"]

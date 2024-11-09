@@ -13,15 +13,11 @@ addopts = [
     "--disable-warnings",
     "--asyncio-mode=auto",
 ]
-pythonpath = [".", "./frontend/",]
-testpaths = [
-    "tests/",
-]
+pythonpath = ["."]
 
 [tool.mypy]
 plugins = ["pydantic.mypy"]
-mypy_path = ".:../../../libs/python/"
-files = ["./app/**/*py"]
+files = ["./src/**/*py"]
 ### --strict
 ignore_missing_imports = false
 disallow_untyped_defs = true

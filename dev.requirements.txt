@@ -1,0 +1,4 @@
+mypy
+pre-commit
+ruff
+types-tqdm==4.66.0.20240417

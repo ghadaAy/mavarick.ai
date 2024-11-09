@@ -1,0 +1,108 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: DockerFile
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: "curl -f http://localhost:8000/api/v1/up  || exit 1"
+      interval: 120s
+      timeout: 20s
+      retries: 3
+    environment:
+      - PYTHONPATH=/app/src
+      - ENV=production
+      - LLM_SHERPA_HOST=http://nlm-ingestor:5001
+      - OLLAMA_HOST=http://ollama:11434
+      - MILVUS_CONNECTION_URL=http://milvus-standalone:19530
+      - OLLAMA_LLM_MODEL=gemma2:2b
+      - OLLAMA_EMBEDDINGS_MODEL_NAME=nomic-embed-text
+      - TEST_FILE_NAME=Scope3_Calculation_Guidance_0.pdf
+      - LOG_LEVEL=INFO
+      - LOG_FORMAT=console
+    restart: unless-stopped
+    depends_on:
+      - ollama
+      - standalone
+      - nlm-ingestor
+  ollama:
+      container_name: ollama
+      image: ollama/ollama:latest
+      healthcheck:
+        test: ollama ps || exit 1
+        interval: 30s
+        timeout: 20s
+        retries: 3
+      restart: unless-stopped
+      ports:
+        - "11444:11434"
+      volumes:
+        - ollama:/root/.ollama
+      environment:
+        - OLLAMA_KEEP_ALIVE=5m
+        - OLLAMA_FLASH_ATTENTION=0  # 1 is experimental as of 0.3.11
+      command: serve
+      deploy:
+        resources:
+          reservations:
+            devices:
+            - driver: nvidia
+              capabilities: [gpu]
+  nlm-ingestor:
+    hostname: nlm-ingestor
+    image: inferyxhub/nlm-ingestor:latest
+    ports:
+      - 5001:5001
+    restart: always
+
+  etcd:
+    container_name: milvus-etcd
+    image: quay.io/coreos/etcd:v3.5.0
+    environment:
+      - ETCD_AUTO_COMPACTION_MODE=revision
+      - ETCD_AUTO_COMPACTION_RETENTION=1000
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+    volumes:
+      - etcd:/etcd
+    command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+
+  minio:
+    container_name: milvus-minio
+    image: minio/minio:RELEASE.2020-12-03T00-03-10Z
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    volumes:
+      - minio:/minio_data
+    command: minio server /minio_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  standalone:
+    container_name: milvus-standalone
+    image: milvusdb/milvus #milvusdb/milvus:master-20241107-f348bd94-amd64
+    command: ["milvus", "run", "standalone"]
+    restart: "always"
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+    volumes:
+      - milvus:/var/lib/milvus
+    ports:
+      - "19530:19530"
+    depends_on:
+      - "etcd"
+      - "minio"
+
+networks:
+  default:
+    name: milvus
+volumes:
+  ollama:
+  etcd:
+  milvus:
+  minio:

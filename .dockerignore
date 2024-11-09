@@ -88,3 +88,6 @@ venv/
 
 # VS Code
 .vscode/
+*.env
+ollama
+*cache
