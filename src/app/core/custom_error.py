@@ -1,13 +1,16 @@
 """Module for custom error handling with traceback logging."""
+
+import os
 import traceback
 
+from pydantic import ValidationError
 from result import Err
 
 
-class CustomError(Err):
+class AppError(Err):
     """Error class that logs message and traceback."""
 
-    def __init__(self, message: str, exc: Exception) -> None:
+    def __init__(self, message: str, exc: Exception | None = None) -> None:
         """
         Initializes the error with a message and formatted traceback.
 
@@ -16,14 +19,27 @@ class CustomError(Err):
             exc (Exception): Original exception to extract traceback from.
 
         """
-        self.formatted_traceback = "".join(traceback.format_tb(exc.__traceback__))
         self.message = message
-        super().__init__(f"{self.message}:{self.formatted_traceback}")
+        self.traceback = self.format_exception(exc) if exc else ""
+        super().__init__(f"{self.message}:{self.traceback}")
 
     def __str__(self) -> str:
         """Returns the formatted traceback as a string representation of the error."""
-        return self.formatted_traceback
+        return self.traceback
 
-    def unwrap_err(self) -> str:
-        """Unwraps and returns the error message with traceback details."""
-        return str(self)
+    def format_exception(self, exc: BaseException) -> str:
+        """
+        Set a properly formatted exception traceback on the error object.
+
+        Args:
+            exc (BaseException): the exception that ocurred.
+
+        Returns:
+            None
+
+        """
+        if isinstance(exc, ValidationError):
+            self.message += os.linesep
+            self.message += exc.json()
+
+        return os.linesep.join(traceback.format_exception(exc))
