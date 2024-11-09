@@ -1,4 +1,5 @@
 """All prompts used in the rag flow."""
+
 from langchain_core.prompts import ChatPromptTemplate
 
 GRADER_SYSTEM_PROMPT = """You are a grader assessing relevance of a retrieved document to a user question. \n
@@ -13,7 +14,7 @@ GRADER_SYSTEM_PROMPT = """You are a grader assessing relevance of a retrieved do
     no
     """
 
-grader_prompt = ChatPromptTemplate.from_messages(
+GRADER_PROMPT = ChatPromptTemplate.from_messages(
     messages=[
         ("system", GRADER_SYSTEM_PROMPT),
         (
@@ -41,7 +42,7 @@ do not make assumptions and only respond by what is available in  the context
 If you cannot answer return "I apologize but I could not find an answer to your question."
 """
 
-generator_prompt = ChatPromptTemplate.from_messages(
+GENERATOR_PROMPT = ChatPromptTemplate.from_messages(
     messages=[
         ("system", GENERATOR_SYSTEM_PROMPT),
         (
@@ -57,7 +58,7 @@ HALLUCINATION_SYSTEM_PROMPT = """You are a grader assessing whether an LLM gener
     you must return only yes or no.
     example output:
     no"""
-hallucination_prompt = ChatPromptTemplate.from_messages(
+HALLUCINATION_PROMPT = ChatPromptTemplate.from_messages(
     messages=[
         ("system", HALLUCINATION_SYSTEM_PROMPT),
         (
@@ -84,7 +85,7 @@ use the conversation history to  understand the user question better
 If you cannot answer return "I apologize but I could not find an answer to your question."
 you have hallucinated your answer beforehand! make sure to only use the retrieved documents.
 """
-regenerator_prompt = ChatPromptTemplate.from_messages(
+REGENERATOR_PROMPT = ChatPromptTemplate.from_messages(
     messages=[
         ("system", REGENERATOR_SYSTEM_PROMPT),
         (
@@ -122,7 +123,7 @@ User Statement: 'The weather is bad today.'
 AI Response: 'The weather is bad today.'
 
 """
-contextulizer_prompt = ChatPromptTemplate.from_messages(
+CONTEXTUALIZER_PROMPT = ChatPromptTemplate.from_messages(
     messages=[
         ("system", CONTEXTUALIZER_SYSTEM_PROMPT),
         (
@@ -132,12 +133,12 @@ contextulizer_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-KEYWORDS_EXTRACTOR_SYSTEM_PROMPT="""Extract only the essential keywords from the following query and return them in a list format. Ensure the output is a JSON-parsable list of keywords. 
+KEYWORDS_EXTRACTOR_SYSTEM_PROMPT = """Extract only the essential keywords from the following query and return them in a list format. Ensure the output is a JSON-parsable list of keywords.
 
 Example output (only as a format guide, not actual content): ["keyword1", "keyword2"]
 please only return the list just like this ["keyword",  "keyword1"].
 """
-keywords_extractor_prompt= ChatPromptTemplate.from_messages(
+KEYWORDS_EXTRACTOR_PROMPT = ChatPromptTemplate.from_messages(
     messages=[
         ("system", KEYWORDS_EXTRACTOR_SYSTEM_PROMPT),
         (
@@ -148,9 +149,9 @@ keywords_extractor_prompt= ChatPromptTemplate.from_messages(
 )
 
 
-CONSOLIDATOR_SYSTEM_PROMPT="""Given a user query and a list of answers, consolidate the answers into a single, cohesive response that directly addresses the query. Limit the response to a maximum of 4 sentences, ensuring clarity and conciseness. If one of the answers is "Sorry, I could not answer the question," ignore it and use the other answer. If all answers are "Sorry, I could not answer the question," return "Sorry, I could not answer the question."
+CONSOLIDATOR_SYSTEM_PROMPT = """Given a user query and a list of answers, consolidate the answers into a single, cohesive response that directly addresses the query. Limit the response to a maximum of 4 sentences, ensuring clarity and conciseness. If one of the answers is "Sorry, I could not answer the question," ignore it and use the other answer. If all answers are "Sorry, I could not answer the question," return "Sorry, I could not answer the question."
 """
-consolidator_prompt= ChatPromptTemplate.from_messages(
+CONSOLIDATOR_PROMPT = ChatPromptTemplate.from_messages(
     messages=[
         ("system", CONSOLIDATOR_SYSTEM_PROMPT),
         (
