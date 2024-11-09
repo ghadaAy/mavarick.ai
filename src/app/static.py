@@ -9,4 +9,4 @@ ollama_embedding = OllamaEmbeddings(
     base_url=settings.OLLAMA_BASE_URL,
 )
 
-llm = OllamaLLM(model=settings.LLM_MODEL, num_thread=4, top_p=0.43, temperature=0)
+llm = OllamaLLM(model=settings.LLM_MODEL, num_thread=4, top_p=0.43, temperature=0, verbose=False)

@@ -3,6 +3,7 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, status
+import uvicorn
 
 from app.core.config import settings
 from app.file_utils.splitter import split_mavarick_file
@@ -26,7 +27,7 @@ async def life_span(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
     if not texts:
         msg = "No texts were retrieved from split_maverick_file."
         raise ValueError(msg)
-    hybrid.connect().fit_bm25(texts).field_schema().set_collection().set_indexes().insert().set_retriever()
+    hybrid.connect().fit_bm25(texts).field_schema().set_collection().set_indexes().set_retriever()
     yield
     hybrid.disconnect()
 
@@ -53,3 +54,6 @@ async def answer_user_query(user_query:str) -> str:
 
     """
     return await answer_user(user_query)
+
+if __name__=="__main__":
+    uvicorn.run("main:app", port=8000, log_config=None)

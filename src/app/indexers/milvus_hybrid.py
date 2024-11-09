@@ -1,6 +1,7 @@
 """Milvus vector db that supports hybrid search."""
 from typing import Self
 
+from langchain_core.documents.base import Document
 from langchain_milvus.retrievers import MilvusCollectionHybridSearchRetriever
 from langchain_milvus.utils.sparse import BM25SparseEmbedding
 from langchain_ollama import OllamaEmbeddings
@@ -15,6 +16,7 @@ from pymilvus import (
 )
 
 from app.core.config import settings
+from itertools import chain
 
 
 class MilvusHybrid:
@@ -166,6 +168,30 @@ class MilvusHybrid:
         connections.disconnect("default")
 
 
+    async def retrieve(self,query: str) -> list[Document]:
+        """
+        Retrieves relevant documents for a given query.
 
+        Args:
+            query (str): Query string.
 
+        Returns:
+            list[Document]: List of relevant documents.
+
+        """
+        return await self.retriever.aget_relevant_documents(query=query)
+
+    async  def batch_retrieve(self, queries:list[str]) -> set[str]:
+        """
+        Retrieves relevant documents for a list of queries.
+
+        Args:
+            queries (list[str]): list of queries.
+
+        Returns:
+            list[Document]: List of relevant documents.
+
+        """
+        nested_docs = await self.retriever.abatch(queries)
+        return {doc.page_content for doc in chain.from_iterable(nested_docs)}
 hybrid = MilvusHybrid()

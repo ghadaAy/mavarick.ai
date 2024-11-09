@@ -21,3 +21,4 @@ result==0.17.0
 structlog==24.4.0
 tenacity==9.0.0
 uvicorn==0.32.0
+tiktoken

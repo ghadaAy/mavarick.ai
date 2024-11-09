@@ -131,3 +131,31 @@ contextulizer_prompt = ChatPromptTemplate.from_messages(
         ),
     ]
 )
+
+KEYWORDS_EXTRACTOR_SYSTEM_PROMPT="""Extract only the essential keywords from the following query and return them in a list format. Ensure the output is a JSON-parsable list of keywords. 
+
+Example output (only as a format guide, not actual content): ["keyword1", "keyword2"]
+please only return the list just like this ["keyword",  "keyword1"].
+"""
+keywords_extractor_prompt= ChatPromptTemplate.from_messages(
+    messages=[
+        ("system", KEYWORDS_EXTRACTOR_SYSTEM_PROMPT),
+        (
+            "human",
+            "user query: \n\n <query>{question}</query> ",
+        ),
+    ]
+)
+
+
+CONSOLIDATOR_SYSTEM_PROMPT="""Given a user query and a list of answers, consolidate the answers into a single, cohesive response that directly addresses the query. Limit the response to a maximum of 4 sentences, ensuring clarity and conciseness. If one of the answers is "Sorry, I could not answer the question," ignore it and use the other answer. If all answers are "Sorry, I could not answer the question," return "Sorry, I could not answer the question."
+"""
+consolidator_prompt= ChatPromptTemplate.from_messages(
+    messages=[
+        ("system", CONSOLIDATOR_SYSTEM_PROMPT),
+        (
+            "human",
+            "user query: \n\n <query>{question}</query> \n\n <answers>{answers}</answers>",
+        ),
+    ]
+)
