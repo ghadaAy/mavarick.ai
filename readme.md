@@ -18,12 +18,18 @@ To build and run the project, follow these steps:
 docker compose up --build -d
 ```
    the backend will take a while to start as indexing and model loading and downloading happen at startup. This is only viable in a testing setup, in a real world scenario indexing would occur on demand in a dedicated endpoint.
+   
 2. Please wait until the container has started
-3. Go to your browser at **http://localhost:8000/api/v1/docs**
-4. click the **get_answer** endpoint
-5. click **try it out**
-6. input your query in the text box and click **execute**
-7. wait for the answer to appear below
+   
+4. Go to your browser at **http://localhost:8000/api/v1/docs**
+   
+6. click the **get_answer** endpoint
+   
+8. click **try it out**
+   
+10. input your query in the text box and click **execute**
+    
+12. wait for the answer to appear below
 
 
 ## Key Technologies
