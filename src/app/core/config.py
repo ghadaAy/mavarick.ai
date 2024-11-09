@@ -1,64 +1,70 @@
 """Environment configuration for application settings."""
-import logging
+
+import os
+from pathlib import Path
 from typing import Literal
 
 from pydantic import (
-    computed_field,
+    AnyHttpUrl,
 )
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+LogLevel = Literal[
+    "CRITICAL",
+    "ERROR",
+    "WARNING",
+    "INFO",
+    "DEBUG",
+]
+LogFormat = Literal["console", "json"]
 
 
 class Settings(BaseSettings):
     """App configuration settings."""
 
-    SERVER_STATE: Literal["dev", "production"]
-    DOCKER: bool
-    PRODUCTION: bool = False
+    model_config = SettingsConfigDict(env_file=".env", extra="allow")
+    ENV: Literal["dev", "production"]
     SPLIT_CHUNK_SIZE: int = 500
     SPLIT_OVERLAP_SIZE: int = 100
     LLMSHERPA_TIMEOUT: int = 60
-    LLM_MODEL: str = "gemma2:2b"
+    OLLAMA_LLM_MODEL: str
+    OLLAMA_EMBEDDINGS_MODEL_NAME: str
     RAG_TOP_K: int = 14
-    OLLAMA_BASE_URL: str = "http://localhost:11434"
-    OLLAMA_EMBEDDINGS_MODEL_NAME: str = "nomic-embed-text"
+    OLLAMA_HOST: AnyHttpUrl
     VECTOR_DB_TABLE_NAME: str = "mavarick"
     VECTOR_DB_DB_NAME: str = "vectordb"
     EMBEDDINGS_DIMENSION: int = 768
     MAX_LLM_RETRIES: int = 2
 
     COLLECTION_NAME: str = "mavarick"
-    PROJECT_NAME:str="Mavarick"
+    PROJECT_NAME: str = "Mavarick"
     API_PREFIX: str = "/api/v1"
 
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def BASE_DATABASE_URL(self) -> str:
-        """Constructs the base URL for the PostgreSQL database connection."""
-        return f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}"
+    MILVUS_CONNECTION_URL: AnyHttpUrl
+    LOG_LEVEL: LogLevel
+    LOG_FORMAT: LogFormat
+    TEST_FILE_NAME: str
+    APP_PATH: Path = Path(__file__).parent.parent
 
-    @computed_field
+    @property
+    def TEST_FILE_PATH(self) -> str:
+        """
+        Returns:
+            str: Absolute path to the testfile.
+
+        """
+        path = self.APP_PATH / "files" / self.TEST_FILE_NAME
+        assert os.path.exists(
+            path
+        ), f"please ensure the test file {self.TEST_FILE_NAME} is placed under ROOT/src/app/files"
+        return str(path)
+
+    LLM_SHERPA_HOST: AnyHttpUrl
+
     @property
     def LLM_SHERPA_URI(self) -> str:
-        """Determines the LLMSherpa API URI based on whether Docker is used."""
-        if self.DOCKER:
-            return "http://nlm-ingestor:5001/api/parseDocument?renderFormat=all"
-        return "http://localhost:5001/api/parseDocument?renderFormat=all"
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def LOG_LEVEL(self) -> logging.INFO | logging.DEBUG:
-        """Sets log level based on production status."""
-        if self.PRODUCTION:
-            return logging.INFO
-        return logging.DEBUG
-
-    @computed_field
-    @property
-    def MILVUS_CONNECTION_URL(self) -> str:
-        """Provides the Milvus connection URL based on Docker environment."""
-        if self.DOCKER:
-            return "http://milvus-standalone:19530"
-        return "http://localhost:19530"
+        """Determines the LLMSherpa endpoint based on the host used."""
+        return f"{self.LLM_SHERPA_HOST}/api/parseDocument?renderFormat=all"
 
 
-settings = Settings(_env_file="./.env")
+settings = Settings()  # pyright: ignore[reportCallIssue]
